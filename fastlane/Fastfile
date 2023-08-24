@@ -1,0 +1,3 @@
+lane :swit do
+  android_testlab_script_swit
+end
