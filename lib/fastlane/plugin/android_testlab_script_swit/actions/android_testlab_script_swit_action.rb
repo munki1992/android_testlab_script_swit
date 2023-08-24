@@ -2,7 +2,7 @@ require 'fastlane/action'
 require 'json'
 require 'fileutils'
 
-require_relative '../helper/firebase_testlab_with_script_android_helper'
+require_relative '../helper/android_testlab_script_swit_helper.rb'
 
 module Fastlane
   module Actions
