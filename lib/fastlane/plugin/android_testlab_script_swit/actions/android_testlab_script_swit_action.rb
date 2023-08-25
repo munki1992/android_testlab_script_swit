@@ -36,20 +36,25 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
-        json = JSON.parse(File.read(params[:console_log_file_name]))
-        UI.message("Test status: #{json}")
+        swit_webhook_url = params[:swit_webhook_url]
+        swit_webhook_payload = params[:swit_webhook_payload]
 
-        # Fetch results
-        download_dir = params[:download_dir]
-        if download_dir
-          UI.message("Fetch results from Firebase Test Lab results bucket")
-          json.each do |status|
-            axis = status["axis_value"]
-            Helper.if_need_dir("#{download_dir}/#{axis}")
-            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-          end
-        end
+        HTTParty.post(swit_webhook_url, body: swit_webhook_payload.to_json, headers: { 'Content-Type' => 'application/json' })
+
+#         json = JSON.parse(File.read(params[:console_log_file_name]))
+#         UI.message("Test status: #{json}")
+#
+#         # Fetch results
+#         download_dir = params[:download_dir]
+#         if download_dir
+#           UI.message("Fetch results from Firebase Test Lab results bucket")
+#           json.each do |status|
+#             axis = status["axis_value"]
+#             Helper.if_need_dir("#{download_dir}/#{axis}")
+#             Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+#             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+#           end
+#         end
 
         UI.message("Finish Action")
       end
@@ -145,6 +150,20 @@ module Fastlane
                                          description: "The path for your android app apk",
                                          type: String,
                                          optional: false),
+
+            # swit_webhook url (true)
+            FastlaneCore::ConfigItem.new(key: :swit_webhook_url,
+                                         env_name: "SWIT_WEBHOOK_URL",
+                                         description: "The Swit WebHOOK URL",
+                                         type: String,
+                                         optional: true),
+
+            # swit_webhook payload (false)
+            FastlaneCore::ConfigItem.new(key: :swit_webhook_payload,
+                                         env_name: "SWIT_WEBHOOK_PAYLOAD",
+                                         description: "The Swit WebHOOK PAYLOAD",
+                                         type: String,
+                                         optional: true),
 
             # test apk (false)
             FastlaneCore::ConfigItem.new(key: :app_test_apk,
