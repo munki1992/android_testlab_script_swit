@@ -23,6 +23,8 @@ module Fastlane
         # RoboScriptOption Add
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
+        UI.message(params[:gcloud_components_channel])
+        
         # Run Firebase Test Lab
         result_url = Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
