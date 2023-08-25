@@ -24,7 +24,7 @@ module Fastlane
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
         # Run Firebase Test Lab
-        result_url = Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+        result_url = Helper.run_tests2(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
@@ -37,40 +37,24 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
+#         wait_for_test_to_complete(test_results_url)
 
         json = JSON.parse(File.read(params[:console_log_file_name]))
         UI.message("Test status: #{json}")
 
-        wait_for_test_to_complete(test_results_url)
-
-#
-#         # Fetch results
-#         download_dir = params[:download_dir]
-#         if download_dir
-#           UI.message("Fetch results from Firebase Test Lab results bucket")
-#           json.each do |status|
-#             axis = status["axis_value"]
-#             Helper.if_need_dir("#{download_dir}/#{axis}")
-#             Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-#             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-#           end
-#         end
+        # Fetch results
+        download_dir = params[:download_dir]
+        if download_dir
+          UI.message("Fetch results from Firebase Test Lab results bucket")
+          json.each do |status|
+            axis = status["axis_value"]
+            Helper.if_need_dir("#{download_dir}/#{axis}")
+            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+          end
+        end
 
         UI.message("Finish Action")
-      end
-
-      def wait_for_test_to_complete(url)
-        require 'open-uri'
-
-        loop do
-            html = open(url).read
-
-            if html.include?("Test is complete")
-                break
-            else
-                sleep(10)   # wait for a few seconds before checking again.
-            end
-        end
       end
 
       # Short Detils
