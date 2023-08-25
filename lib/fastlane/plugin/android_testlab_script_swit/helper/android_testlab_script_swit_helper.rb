@@ -32,26 +32,11 @@ module Fastlane
       Action.sh("gcloud auth activate-service-account --key-file #{gcloud_key_file}")
     end
 
-    def self.run_tests(gcloud_components_channel, arguments)
+    def self.run_tests(arguments)
       UI.message("Test running...")
-      Action.sh("set +e; gcloud #{gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
+#       Action.sh("set +e; gcloud #{gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
+      Action.sh("set +e; gcloud stable firebase test android run #{arguments}; set -e")
     end
-
-    def self.run_tests2(gcloud_components_channel, arguments)
-      UI.message("Test running...")
-
-      thread = Thread.new do
-        Action.sh("set +e; gcloud #{gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
-      end
-
-      while thread.alive?
-        # Do something while waiting for the test to complete...
-        sleep(10)   # wait for a few seconds before checking again.
-      end
-
-      UI.message("Test completed.")
-    end
-
 
     def self.copy_from_gcs(bucket_and_path, copy_to)
       UI.message("Copy from gs://#{bucket_and_path}")
