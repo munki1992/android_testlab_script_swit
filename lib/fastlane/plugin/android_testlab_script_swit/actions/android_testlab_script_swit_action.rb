@@ -31,12 +31,12 @@ module Fastlane
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
                   "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
-                  "--timeout #{params[:timeout]} " \
+                  "--timeout #{params[:timeout]} "\
                   "--results-bucket #{results_bucket} "\
-                  "--results-dir #{results_dir} "
-#                  "#{params[:extra_options]} "\
-#                  "#{robo_script_option}"\
-#                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
+                  "--results-dir #{results_dir} "\
+                  "#{params[:extra_options]} "\
+                  "#{robo_script_option}"\
+                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
 #         json = JSON.parse(File.read(params[:console_log_file_name]))
