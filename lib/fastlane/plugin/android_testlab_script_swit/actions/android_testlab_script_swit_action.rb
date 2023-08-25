@@ -31,7 +31,7 @@ module Fastlane
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
                   "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
-                  "--timeout #{params[:timeout]} "
+                  "--timeout #{params[:timeout]} " \
                   "--results-bucket #{results_bucket} "\
                   "--results-dir #{results_dir} "
 #                  "#{params[:extra_options]} "\
