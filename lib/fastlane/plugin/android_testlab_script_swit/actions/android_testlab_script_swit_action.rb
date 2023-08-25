@@ -17,7 +17,7 @@ module Fastlane
         Helper.config(params[:project_id])
 
         # Activate service account
-        Helper.authenticate(params[:gcloud_service_key_file])
+        Helper.authenticate(params[:gcloud_key_file])
 
         # RoboScriptOption Add
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
@@ -87,7 +87,7 @@ module Fastlane
 
             # gcloud_key_file (true)
             FastlaneCore::ConfigItem.new(key: :gcloud_key_file,
-                                         env_name: "GCLOUD_SERVICE_KEY_FILE",
+                                         env_name: "GCLOUD_KEY_FILE",
                                          description: "File path containing the gcloud auth key. Default: Created from GCLOUD_SERVICE_KEY environment variable",
                                          is_string: true,
                                          optional: false),
