@@ -1,7 +1,6 @@
 require 'fastlane/action'
 require 'json'
 require 'fileutils'
-require 'httparty'
 require 'open-uri'
 
 module Fastlane
@@ -40,10 +39,10 @@ module Fastlane
 
         wait_for_test_to_complete(test_results_url)
 
-        swit_webhook_url = params[:swit_webhook_url]
-        swit_webhook_payload = params[:swit_webhook_payload]
-
-        HTTParty.post(swit_webhook_url, body: swit_webhook_payload.to_json, headers: { 'Content-Type' => 'application/json' })
+#         swit_webhook_url = params[:swit_webhook_url]
+#         swit_webhook_payload = params[:swit_webhook_payload]
+#
+#         HTTParty.post(swit_webhook_url, body: swit_webhook_payload.to_json, headers: { 'Content-Type' => 'application/json' })
 
 #         json = JSON.parse(File.read(params[:console_log_file_name]))
 #         UI.message("Test status: #{json}")
