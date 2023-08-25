@@ -34,8 +34,9 @@ module Fastlane
 
     def self.run_tests(arguments)
       UI.message("Test running...")
+      Action.sh("set +e; gcloud#{' ' + gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
 #       Action.sh("set +e; gcloud #{gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
-      Action.sh("set +e; gcloud stable firebase test android run #{arguments}; set -e")
+#       Action.sh("set +e; gcloud stable firebase test android run #{arguments}; set -e")
     end
 
     def self.copy_from_gcs(bucket_and_path, copy_to)

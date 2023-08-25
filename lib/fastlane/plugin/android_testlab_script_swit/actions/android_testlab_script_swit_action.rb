@@ -24,7 +24,9 @@ module Fastlane
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
         # Run Firebase Test Lab
-        Helper.run_tests("--type #{params[:type]} "\
+        UI.message(params[:gcloud_components_channel])
+
+        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
