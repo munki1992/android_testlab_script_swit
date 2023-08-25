@@ -2,8 +2,6 @@ require 'fastlane/action'
 require 'json'
 require 'fileutils'
 
-require_relative '../helper/android_testlab_script_swit_helper.rb'
-
 module Fastlane
   module Actions
     class FirebaseTestlabWithScriptAndroidAction < Action
@@ -225,6 +223,7 @@ module Fastlane
                                          optional: true,
                                          verify_block: proc do |value|
                                          UI.user_error!("Couldn't find JSON file at path '#{value}'") unless File.exist?(value) end)
+      ]
       end
 
       def self.check_has_property(hash_obj, property)
