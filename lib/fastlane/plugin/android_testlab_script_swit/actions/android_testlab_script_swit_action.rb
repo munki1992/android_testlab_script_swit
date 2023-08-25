@@ -182,7 +182,7 @@ module Fastlane
             FastlaneCore::ConfigItem.new(key: :gcloud_components_channel,
                                          env_name: "gcloud_components_channel",
                                          description: "If you use beta or alpha components. Default stable (alpha/beta)",
-                                         type: String",
+                                         is_string: true",
                                          optional: true,
                                          default_value: "stable"),
 
