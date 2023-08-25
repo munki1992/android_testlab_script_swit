@@ -4,7 +4,7 @@ require 'fileutils'
 
 module Fastlane
   module Actions
-    class FirebaseTestlabWithScriptAndroidAction < Action
+    class AndroidTestlabScriptSwitAction < Action
 
       # actions run
       def self.run(params)

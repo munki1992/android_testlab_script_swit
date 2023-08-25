@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.author        = '나비이쁜이'
   spec.email         = 'munkijung1992@gmail.com'
 
-  spec.summary       = 'short'
+  spec.summary       = '아직 만들고 있습니다...'
   spec.homepage      = "https://github.com/munki1992/android_testlab_script_swit"
   spec.license       = "MIT"
 
