@@ -24,9 +24,7 @@ module Fastlane
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
         # Run Firebase Test Lab
-        UI.message(params[:gcloud_components_channel])
-
-        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+        result_url = Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
@@ -39,10 +37,9 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
-#         wait_for_test_to_complete(test_results_url)
-
 #         json = JSON.parse(File.read(params[:console_log_file_name]))
 #         UI.message("Test status: #{json}")
+
 #
 #         # Fetch results
 #         download_dir = params[:download_dir]
