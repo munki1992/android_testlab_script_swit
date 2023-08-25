@@ -182,14 +182,9 @@ module Fastlane
             FastlaneCore::ConfigItem.new(key: :gcloud_components_channel,
                                          env_name: "gcloud_components_channel",
                                          description: "If you use beta or alpha components. Default stable (alpha/beta)",
-                                         is_string: true,
+                                         type: String",
                                          optional: true,
-                                         default_value: "stable",
-                                         verify_block: proc do |value|
-                                           if value != "stable" && value != "alpha" && value != "beta"
-                                             UI.user_error!("Unknown gcloud component channel.")
-                                           end
-                                         end),
+                                         default_value: "stable"),
 
             # console_log_file_name (false)
             FastlaneCore::ConfigItem.new(key: :console_log_file_name,
