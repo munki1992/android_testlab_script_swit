@@ -26,14 +26,14 @@ module Fastlane
         UI.message(params[:gcloud_components_channel])
         
         # Run Firebase Test Lab
-        result_url = Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
                   "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
                   "--timeout #{params[:timeout]} "
-#                  "--results-bucket #{results_bucket} "\
-#                  "--results-dir #{results_dir} "\
+                  "--results-bucket #{results_bucket} "\
+                  "--results-dir #{results_dir} "
 #                  "#{params[:extra_options]} "\
 #                  "#{robo_script_option}"\
 #                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
