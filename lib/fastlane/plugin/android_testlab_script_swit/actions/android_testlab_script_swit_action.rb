@@ -1,6 +1,8 @@
 require 'fastlane/action'
 require 'json'
 require 'fileutils'
+require 'httparty'
+require 'open-uri'
 
 module Fastlane
   module Actions
@@ -23,7 +25,7 @@ module Fastlane
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
         # Run Firebase Test Lab
-        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+        result_url = Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
@@ -35,6 +37,8 @@ module Fastlane
                   "#{robo_script_option}"\
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
+
+        wait_for_test_to_complete(test_results_url)
 
         swit_webhook_url = params[:swit_webhook_url]
         swit_webhook_payload = params[:swit_webhook_payload]
@@ -57,6 +61,20 @@ module Fastlane
 #         end
 
         UI.message("Finish Action")
+      end
+
+      def wait_for_test_to_complete(url)
+        require 'open-uri'
+
+        loop do
+            html = open(url).read
+
+            if html.include?("Test is complete")
+                break
+            else
+                sleep(10)   # wait for a few seconds before checking again.
+            end
+        end
       end
 
       # Short Detils
@@ -260,8 +278,22 @@ module Fastlane
         platform == :android
       end
 
+      #
       def self.output
         [['console_output.log', 'A console log when running Firebase Test Lab with gcloud']]
+      end
+
+      #
+      def wait_for_test_to_complete(url)
+        loop do
+          html = open(url).read
+
+          if html.include?("TestLab is complete")
+            break
+          else
+            sleep(10)  # wait for 10 seconds before checking again
+          end
+        end
       end
 
       def self.example_code
