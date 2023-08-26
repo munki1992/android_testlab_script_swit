@@ -39,21 +39,21 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
-#         json = JSON.parse(File.read(params[:console_log_file_name]))
-#         UI.message("Test status: #{json}")
+         json = JSON.parse(File.read(params[:console_log_file_name]))
+         UI.message("Test status: #{json}")
 
-#
-#         # Fetch results
-#         download_dir = params[:download_dir]
-#         if download_dir
-#           UI.message("Fetch results from Firebase Test Lab results bucket")
-#           json.each do |status|
-#             axis = status["axis_value"]
-#             Helper.if_need_dir("#{download_dir}/#{axis}")
-#             Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-#             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-#           end
-#         end
+
+         # Fetch results
+         download_dir = params[:download_dir]
+         if download_dir
+           UI.message("Fetch results from Firebase Test Lab results bucket")
+           json.each do |status|
+             axis = status["axis_value"]
+             Helper.if_need_dir("#{download_dir}/#{axis}")
+             Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+           end
+         end
 
         UI.message("Finish Action")
       end
