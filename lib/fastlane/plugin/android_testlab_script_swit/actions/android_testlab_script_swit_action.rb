@@ -63,16 +63,16 @@ module Fastlane
             UI.message("Part #{index + 1}: #{part}")
           end
           
-          params[:devices].each_with_index do |device, index|
-            payload_string += %Q{
-              {"type":"rt_section","indent":1,"elements":[{"type":"rt_text","content":"Device#{index + 1}"}]},
-              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"model : #{device[:model]}"}]},
-              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"OS Version : #{device[:version]}"}]},
-              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"locale : #{device[:locale]}"}}},
-              {"type":"rt_section","indent":2,"elements":[{"type\":\"rt_text\",\"content":{"orientation : #{device[:orientation]}"}}},
-              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"Result : #{outcome}"}}},
-            }
-          end
+#          params[:devices].each_with_index do |device, index|
+#            payload_string += %Q{
+#              {"type":"rt_section","indent":1,"elements":[{"type":"rt_text","content":"Device#{index + 1}"}]},
+#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"model : #{device[:model]}"}]},
+#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"OS Version : #{device[:version]}"}]},
+#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"locale : #{device[:locale]}"}}},
+#              {"type":"rt_section","indent":2,"elements":[{"type\":\"rt_text\",\"content":{"orientation : #{device[:orientation]}"}}},
+#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"Result : #{outcome}"}}},
+#            }
+#          end
           
         end
         
