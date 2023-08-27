@@ -57,9 +57,9 @@ module Fastlane
           UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
           
           parts.each_with_index do |part, index|
-          UI.message("Part #{index + 1}: #{part}")
+            UI.message("Part #{index + 1}: #{part}")
+          end
         end
-        
         
         
         # Fetch results
