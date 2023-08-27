@@ -34,14 +34,6 @@ module Fastlane
 
     def self.run_tests(gcloud_components_channel, arguments)
       UI.message("Test running...")
-      
-      # 커스텀 2
-#      Action.sh("set +e; gcloud #{gcloud_components_channel} firebase test android run #{arguments}; set -e")
-      
-      # 커스텀 1
-#      Action.sh("set +e; gcloud#{' ' + gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
-      
-      # 원본
       Action.sh("set +e; gcloud #{gcloud_components_channel unless gcloud_components_channel == "stable"} firebase test android run #{arguments}; set -e")
     end
 

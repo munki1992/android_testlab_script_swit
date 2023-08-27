@@ -2,6 +2,7 @@ require 'fastlane/action'
 require 'json'
 require 'fileutils'
 require 'open-uri'
+require 'httparty'
 
 module Fastlane
   module Actions
@@ -39,21 +40,43 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
-         json = JSON.parse(File.read(params[:console_log_file_name]))
-         UI.message("Test status: #{json}")
+        json = JSON.parse(File.read(params[:console_log_file_name]))
+        UI.message("Test status: #{json}")
 
+        # 각 JSON 객체에 대해 반복
+        json.each do |item|
+          # 정보 추출하기
+          axis_value = item["axis_value"]
+          outcome = item["outcome"]
+          test_details = item["test_details"]
 
-         # Fetch results
-         download_dir = params[:download_dir]
-         if download_dir
-           UI.message("Fetch results from Firebase Test Lab results bucket")
-           json.each do |status|
-             axis = status["axis_value"]
-             Helper.if_need_dir("#{download_dir}/#{axis}")
-             Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-           end
-         end
+          # 'axis_value' 분리하기
+          parts = axis_value.split('-')
+
+          # 출력하기
+          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
+          
+          parts.each_with_index do |part, index|
+          UI.message("Part #{index + 1}: #{part}")
+        end
+        
+        
+        
+        # Fetch results
+        download_dir = params[:download_dir]
+        if download_dir
+          UI.message("Fetch results from Firebase Test Lab results bucket")
+          json.each do |status|
+            axis = status["axis_value"]
+            Helper.if_need_dir("#{download_dir}/#{axis}")
+            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+          end
+        end
+         
+         
+        # Swit Message
+        HTTParty.post(params[:swit_webhook_url, body: params[:swit_webhook_payload, headers: { 'Content-Type' => 'application/json' })
 
         UI.message("Finish Action")
       end
