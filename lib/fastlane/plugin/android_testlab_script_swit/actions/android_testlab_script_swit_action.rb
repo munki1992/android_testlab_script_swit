@@ -12,8 +12,9 @@ module Fastlane
       def self.run(params)
         UI.message("********************************")
         UI.message("Start Action")
-        UI.message(params[:gcloud_components_channel])
-        
+        UI.message("********************************")
+        UI.message("GCloudChannel :: ", params[:gcloud_components_channel])
+        UI.message("********************************")
 
         # Result Bucket & Dir
         results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
@@ -28,8 +29,11 @@ module Fastlane
         # RoboScriptOption
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
-        # Swit PayLoad
-        new_payload = ""
+        # Swit Result PayLoad
+        swit_device_payload = ""
+        
+        # Swit Send PayLoad
+        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
         
         # Run Firebase Test Lab
         Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
@@ -70,14 +74,14 @@ module Fastlane
 
         results.each do |result|
             result[:parts].each_with_index do |part, index|
-                new_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
+                swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
+                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{result[:parts].join(', ')}\"}]},
                         {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
                         {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
                         {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
                         {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
 
-                new_payload += "," unless index == result[:parts].length - 1
+                swit_device_payload += "," unless index == result[:parts].length - 1
             end
         end
 
@@ -96,13 +100,10 @@ module Fastlane
           end
         end
 
-        # Remove the closing square bracket from the original payload and add a comma
-        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-
-        # Add the additional payload and close the square bracket
-        swit_webhook_payload += new_payload + ']}]}'
+        # Swit PayLoad 병합
+        swit_webhook_payload += swit_device_payload + ']}]}'
          
-        # Swit Message
+        # Swit WebHook
         HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
 
         UI.message("********************************")
