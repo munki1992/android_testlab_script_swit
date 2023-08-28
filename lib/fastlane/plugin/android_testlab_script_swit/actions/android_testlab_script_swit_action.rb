@@ -51,9 +51,6 @@ module Fastlane
 
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
-        
-        # 결과 데이터 저장용 배열 생성
-        results = []
 
         # 각 JSON 객체에 대해 반복
         resultJson.each do |item|
@@ -68,9 +65,9 @@ module Fastlane
           parts.each_with_index do |part, index|
               swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
                       {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},
-                      {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
+                      {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
 
-              swit_device_payload += "," unless index == result[:parts].length - 1
+              swit_device_payload += "," unless index == parts.length - 1
           end
           
         end
