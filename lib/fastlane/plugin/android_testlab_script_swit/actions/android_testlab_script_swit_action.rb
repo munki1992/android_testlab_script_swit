@@ -61,7 +61,7 @@ module Fastlane
           UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
 
           params[:devices].each_with_index do |device, index|
-            UI.message("Part #{index + 1}: #{part}")
+#            UI.message("Part #{index + 1}: #{part}")
             
             new_payload += "{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
                 {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
