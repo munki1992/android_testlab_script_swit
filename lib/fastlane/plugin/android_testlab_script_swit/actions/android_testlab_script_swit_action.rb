@@ -86,7 +86,7 @@ module Fastlane
 #          end
 #        end
 
-        payload_string = [
+        new_payload = [
             {"type" => "rt_section", "indent" => 1, "elements" => [{"type" => "rt_text", "content" => "Device#{index + 1}"}]},
             {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:model]}"}]},
             {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:version]}"}]},
@@ -99,13 +99,13 @@ module Fastlane
 #        payload_string = params[:swit_webhook_payload]
 
         # 앞뒤 지우기
-        payload_string = payload_string.to_json
+        new_payload_string = new_payload.to_json
         
         # Remove the closing square bracket from the original payload and add a comma
-        swit_webhook_payload = params[:swit_webhook_payload][0..-2] + ','
+        swit_webhook_payload = params[:swit_webhook_payload][0..-3] + ','
 
         # Add the additional payload and close the square bracket
-        swit_webhook_payload += payload_string[1..]
+        swit_webhook_payload += new_payload_string + ']}]}'
          
         # Swit Message
         HTTParty.post(params[:swit_webhook_url], body: { body_text: params[:swit_webhook_payload] }.to_json, headers: { 'Content-Type' => 'application/json' })
