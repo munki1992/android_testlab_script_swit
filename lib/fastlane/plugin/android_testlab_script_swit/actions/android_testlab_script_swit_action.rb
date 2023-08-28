@@ -43,8 +43,6 @@ module Fastlane
 #        json = JSON.parse(File.read(params[:console_log_file_name]))
 #        UI.message("Test status: #{json}")
 
-        #
-        payload_string = params[:swit_webhook_payload]
         
         # 각 JSON 객체에 대해 반복
 #        json.each do |item|
@@ -87,7 +85,24 @@ module Fastlane
 #            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
 #          end
 #        end
-         
+
+        payload_string = +{
+            {"type" => "rt_section", "indent" => 1, "elements" => [{"type" => "rt_text", "content" => "Device#{index + 1}"}]},
+            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:model]}"}]},
+            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:version]}"}]},
+            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:locale]}"}]},
+            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:orientation]}"}]},
+            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{outcome}"}]}
+        }
+        
+        # 원래 받아오는 값
+#        payload_string = params[:swit_webhook_payload]
+
+        # Remove the closing square bracket from the original payload and add a comma
+        swit_webhook_payload = params[:swit_webhook_payload][0..-2] + ','
+
+        # Add the additional payload and close the square bracket
+        swit_webhook_payload += payload_string[1..-1]
          
         # Swit Message
         HTTParty.post(params[:swit_webhook_url], body: { body_text: params[:swit_webhook_payload] }.to_json, headers: { 'Content-Type' => 'application/json' })
