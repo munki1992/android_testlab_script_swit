@@ -12,19 +12,19 @@ module Fastlane
       def self.run(params)
         UI.message("Start Action")
 
-#        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
-#        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
+        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
+        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
 
         # Set target project
-#        Helper.config(params[:project_id])
+        Helper.config(params[:project_id])
 
         # Activate service account
-#        Helper.authenticate(params[:gcloud_key_file])
+        Helper.authenticate(params[:gcloud_key_file])
 
         # RoboScriptOption Add
-#        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
+        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
-#        UI.message(params[:gcloud_components_channel])
+        UI.message(params[:gcloud_components_channel])
         
         # Run Firebase Test Lab
 #        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
@@ -45,22 +45,22 @@ module Fastlane
 
         
         # 각 JSON 객체에 대해 반복
-#        json.each do |item|
-#          # 정보 추출하기
-#          axis_value    = item["axis_value"]
-#          outcome       = item["outcome"]
-#          test_details  = item["test_details"]
-#
-#          # 'axis_value' 분리하기
-#          parts = axis_value.split('-')
-#
-#          # 출력하기
-#          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
-#
-#          parts.each_with_index do |part, index|
-#            UI.message("Part #{index + 1}: #{part}")
-#          end
-#        end
+        json.each do |item|
+          # 정보 추출하기
+          axis_value    = item["axis_value"]
+          outcome       = item["outcome"]
+          test_details  = item["test_details"]
+
+          # 'axis_value' 분리하기
+          parts = axis_value.split('-')
+
+          # 출력하기
+          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
+
+          parts.each_with_index do |part, index|
+            UI.message("Part #{index + 1}: #{part}")
+          end
+        end
         
 #        params[:devices].each_with_index do |device, index|
 #          payload_string = +{,
@@ -73,6 +73,14 @@ module Fastlane
 #          }
 #        end
         
+        params[:devices].each_with_index do |device, index|
+          new_payload = "[{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
+            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
+            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"OS Version : #{device[:version]}\"}]},
+            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"locale : #{device[:locale]}\"}]},
+            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"orientation : #{device[:orientation]}\"}]},
+            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Result : #{outcome}\"}]}]"
+        end
         
         # Fetch results
 #        download_dir = params[:download_dir]
@@ -85,14 +93,6 @@ module Fastlane
 #            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
 #          end
 #        end
-
-        
-        new_payload = "[{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
-                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
-                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:version]}\"}]},
-                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:locale]}\"}]},
-                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:orientation]}\"}]},
-                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{outcome}\"}]}]"
 
         
         # 원래 하던 행위
