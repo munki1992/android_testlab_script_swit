@@ -13,8 +13,6 @@ module Fastlane
         UI.message("********************************")
         UI.message("Start Action")
         UI.message("********************************")
-        UI.message("GCloudChannel :: ", params[:gcloud_components_channel])
-        UI.message("********************************")
 
         # Result Bucket & Dir
         results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
@@ -84,9 +82,6 @@ module Fastlane
 #                swit_device_payload += "," unless index == result[:parts].length - 1
 #            end
 #        end
-
-        # 결과좀 봅시다.
-        UI.message(new_payload)
         
         # Fetch results
         download_dir = params[:download_dir]
