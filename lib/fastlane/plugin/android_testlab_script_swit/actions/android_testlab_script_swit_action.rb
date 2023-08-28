@@ -44,7 +44,7 @@ module Fastlane
         UI.message("Test status: #{json}")
 
         #
-#        payload_string = params[:swit_webhook_payload]
+        payload_string = params[:swit_webhook_payload]
         
         # 각 JSON 객체에 대해 반복
         json.each do |item|
@@ -91,7 +91,7 @@ module Fastlane
          
          
         # Swit Message
-        HTTParty.post(params[:swit_webhook_url], body: params[:swit_webhook_payload].to_json, headers: { 'Content-Type' => 'application/json' })
+        HTTParty.post(params[:swit_webhook_url], body: payload_string.to_json, headers: { 'Content-Type' => 'application/json' })
 
         UI.message("Finish Action")
       end
@@ -295,19 +295,6 @@ module Fastlane
       #
       def self.output
         [['console_output.log', 'A console log when running Firebase Test Lab with gcloud']]
-      end
-
-      #
-      def wait_for_test_to_complete(url)
-        loop do
-          html = open(url).read
-
-          if html.include?("TestLab is complete")
-            break
-          else
-            sleep(10)  # wait for 10 seconds before checking again
-          end
-        end
       end
 
       def self.example_code
