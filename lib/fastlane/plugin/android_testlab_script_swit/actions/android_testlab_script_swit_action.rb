@@ -8,12 +8,6 @@ module Fastlane
   module Actions
     class AndroidTestlabScriptSwitAction < Action
 
-      # actions run
-      def self.run(params)
-        UI.message("********************************")
-        UI.message("Start Action")
-        UI.message("********************************")
-        
         def measure_time
           start_time = Time.now
           yield
@@ -23,6 +17,12 @@ module Fastlane
           duration_sec = duration_sec_total % 60
           return "#{duration_min}분 소요시간 자동화"
         end
+        
+      # actions run
+      def self.run(params)
+        UI.message("********************************")
+        UI.message("Start Action")
+        UI.message("********************************")
         
         duration = measure_time do
             
