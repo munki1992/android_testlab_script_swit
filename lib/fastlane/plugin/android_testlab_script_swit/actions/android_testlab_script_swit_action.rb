@@ -118,7 +118,7 @@ module Fastlane
         swit_webhook_payload += new_payload_string + ']}]}'
          
         # Swit Message
-        HTTParty.post(params[:swit_webhook_url], body: { body_text: params[:swit_webhook_payload] }.to_json, headers: { 'Content-Type' => 'application/json' })
+        HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
 
         UI.message("Finish Action")
       end
