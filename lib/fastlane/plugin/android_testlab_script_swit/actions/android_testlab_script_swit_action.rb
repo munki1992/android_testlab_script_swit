@@ -12,19 +12,19 @@ module Fastlane
       def self.run(params)
         UI.message("Start Action")
 
-        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
-        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
+#        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
+#        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
 
         # Set target project
-        Helper.config(params[:project_id])
+#        Helper.config(params[:project_id])
 
         # Activate service account
-        Helper.authenticate(params[:gcloud_key_file])
+#        Helper.authenticate(params[:gcloud_key_file])
 
         # RoboScriptOption Add
-        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
+#        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
 
-        UI.message(params[:gcloud_components_channel])
+#        UI.message(params[:gcloud_components_channel])
         
         # Run Firebase Test Lab
 #        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
@@ -90,7 +90,7 @@ module Fastlane
          
          
         # Swit Message
-        HTTParty.post(params[:swit_webhook_url], body: { body_text: JSON.parse(payload_string) }.to_json, headers: { 'Content-Type' => 'application/json' })
+        HTTParty.post(params[:swit_webhook_url], body: { body_text: params[:swit_webhook_payload] }.to_json, headers: { 'Content-Type' => 'application/json' })
 
         UI.message("Finish Action")
       end
