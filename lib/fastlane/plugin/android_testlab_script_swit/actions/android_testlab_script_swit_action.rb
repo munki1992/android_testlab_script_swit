@@ -10,24 +10,26 @@ module Fastlane
 
       # actions run
       def self.run(params)
+        UI.message("********************************")
         UI.message("Start Action")
+        UI.message(params[:gcloud_components_channel])
+        
 
+        # Result Bucket & Dir
         results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
         results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
 
-        # Set target project
+        # Set Target Project ID
         Helper.config(params[:project_id])
 
         # Activate service account
         Helper.authenticate(params[:gcloud_key_file])
 
-        # RoboScriptOption Add
+        # RoboScriptOption
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
-        #
+        # Swit PayLoad
         new_payload = ""
-
-        UI.message(params[:gcloud_components_channel])
         
         # Run Firebase Test Lab
         Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
@@ -43,12 +45,11 @@ module Fastlane
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
 
-        json = JSON.parse(File.read(params[:console_log_file_name]))
-        UI.message("Test status: #{json}")
-
+        # Firebase Test Lab Result Json
+        resultJson = JSON.parse(File.read(params[:console_log_file_name]))
         
         # 각 JSON 객체에 대해 반복
-        json.each do |item|
+        resultJson.each do |item|
           # 정보 추출하기
           axis_value    = item["axis_value"]
           outcome       = item["outcome"]
@@ -61,19 +62,18 @@ module Fastlane
           UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
 
           params[:devices].each_with_index do |device, index|
-#            UI.message("Part #{index + 1}: #{part}")
-            
-            new_payload += "{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
-                {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
+            new_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
+                {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{device[:model]}\"}]},
                 {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{device[:version]}\"}]},
                 {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{device[:locale]}\"}]},
                 {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{device[:orientation]}\"}]},
                 {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
 
             new_payload += "," unless index == params[:devices].length - 1
-            
           end
         end
+        
+        UI.message(new_payload)
         
 #        params[:devices].each_with_index do |device, index|
 #          new_payload += "{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
@@ -107,7 +107,9 @@ module Fastlane
         # Swit Message
         HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
 
+        UI.message("********************************")
         UI.message("Finish Action")
+        UI.message("********************************")
       end
 
       # Short Detils
