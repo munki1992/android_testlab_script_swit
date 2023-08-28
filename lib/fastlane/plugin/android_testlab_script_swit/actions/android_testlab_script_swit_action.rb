@@ -48,6 +48,9 @@ module Fastlane
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
         
+        # 결과 데이터 저장용 배열 생성
+        results = []
+
         # 각 JSON 객체에 대해 반복
         resultJson.each do |item|
           # 정보 추출하기
@@ -61,30 +64,26 @@ module Fastlane
           # 출력하기
           UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
 
-          params[:devices].each_with_index do |device, index|
-            new_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-                {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{device[:model]}\"}]},
-                {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{device[:version]}\"}]},
-                {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{device[:locale]}\"}]},
-                {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{device[:orientation]}\"}]},
-                {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
-
-            new_payload += "," unless index == params[:devices].length - 1
-          end
+          # 결과 데이터 저장
+          results << { parts: parts, outcome: outcome }
         end
-        
+
+        results.each do |result|
+            result[:parts].each_with_index do |part, index|
+                new_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
+                    {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
+                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
+                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
+                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
+                    {\"type\":{\"tada:\"},{\"name\":{\"tada:\"}}},
+                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : " + result[:outcome] + "\"}]}"
+
+                new_payload += "," unless index == result[:parts].length -1
+            end
+        end
+
+        # 결과좀 봅시다.
         UI.message(new_payload)
-        
-#        params[:devices].each_with_index do |device, index|
-#          new_payload += "{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
-#              {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
-#              {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{device[:version]}\"}]},
-#              {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{device[:locale]}\"}]},
-#              {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{device[:orientation]}\"}]},
-#              {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
-#
-#          new_payload += "," unless index == params[:devices].length - 1
-#        end
         
         # Fetch results
         download_dir = params[:download_dir]
