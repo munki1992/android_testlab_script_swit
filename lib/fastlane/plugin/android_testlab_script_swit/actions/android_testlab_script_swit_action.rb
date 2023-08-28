@@ -83,7 +83,7 @@ module Fastlane
           parts.each_with_index do |part, part_index|
               swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},"
               
-              if index == (parts.length -1)
+              if part_index == (parts.length -1)
                   swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
               end
            end
