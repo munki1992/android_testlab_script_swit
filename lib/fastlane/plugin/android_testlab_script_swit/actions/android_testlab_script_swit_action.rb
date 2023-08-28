@@ -62,17 +62,22 @@ module Fastlane
           swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
           
           parts.each_with_index do |part, part_index|
-              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]},"
+              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
               
               if part_index == (parts.length -1)
-                  swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
-                  swit_device_payload += "," unless device_index == (resultJson.length -1)
+                  safe_outcome = outcome.to_json
+                  swit_device_payload += ",{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\": #{safe_outcome}}]}"
+              else
+                  swit_device_payload += ","
               end
            end
+          
+           swit_device_payload += "," unless device_index == (resultJson.length -1)
         end
 
         # remove the last comma if it exists
         swit_device_payload.chomp!(',')
+
 
         
         # 각 JSON 객체에 대해 반복
