@@ -107,13 +107,13 @@ module Fastlane
 #        payload_string = params[:swit_webhook_payload]
 
         # 앞뒤 지우기
-#        new_payload_string = new_payload.to_json
+        new_payload_string = new_payload.to_json
         
-#         Remove the closing square bracket from the original payload and add a comma
-#        swit_webhook_payload = params[:swit_webhook_payload][0..-3] + ','
+        # Remove the closing square bracket from the original payload and add a comma
+        swit_webhook_payload = params[:swit_webhook_payload][0..-3] + ','
 
         # Add the additional payload and close the square bracket
-#        swit_webhook_payload += new_payload_string + ']}]}'
+        swit_webhook_payload += new_payload_string + ']}]}'
          
         # Swit Message
         HTTParty.post(params[:swit_webhook_url], body: { body_text: params[:swit_webhook_payload] }.to_json, headers: { 'Content-Type' => 'application/json' })
