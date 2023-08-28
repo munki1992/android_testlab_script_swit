@@ -50,33 +50,19 @@ module Fastlane
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
 
-        resultJson.each_with_index do |item, device_index|
-          # 정보 추출하기
-          axis_value    = item["axis_value"]
-          outcome       = item["outcome"]
-          test_details  = item["test_details"]
+        swit_device_payload = resultJson.map.with_index do |item, device_index|
+          axis_value_parts = item["axis_value"].split('-')
+          outcome = item["outcome"]
 
-          # 'axis_value' 분리하기
-          parts = axis_value.split('-')
-          
-          swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
-          
-          parts.each_with_index do |part, part_index|
-              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
-              
-              if part_index == (parts.length -1)
-                  safe_outcome = outcome.to_json
-                  swit_device_payload += ",{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\": #{safe_outcome}}]}"
-              else
-                  swit_device_payload += ","
-              end
-           end
-          
-           swit_device_payload += "," unless device_index == (resultJson.length -1)
-        end
+          parts_payload = axis_value_parts.map do |part|
+            "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
+          end.join(',')
 
-        # remove the last comma if it exists
+          device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},#{parts_payload},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\": #{outcome.to_json}}]}"
+        end.join(',')
+
         swit_device_payload.chomp!(',')
+
 
 
         
