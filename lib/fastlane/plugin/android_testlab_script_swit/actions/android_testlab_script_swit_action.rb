@@ -71,14 +71,13 @@ module Fastlane
         results.each do |result|
             result[:parts].each_with_index do |part, index|
                 new_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-                    {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
-                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
-                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
-                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"orientation : #{part[:orientation]}"}}],
-                    {\"type\":{\"tada:\"},{\"name\":{\"tada:\"}}},
-                    {\"type":" "result", "outcome": "#{result[:outcome]}"}"
+                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
+                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
+                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
+                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
+                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
 
-                new_payload += "," unless index == result[:parts].length -1
+                new_payload += "," unless index == result[:parts].length - 1
             end
         end
 
