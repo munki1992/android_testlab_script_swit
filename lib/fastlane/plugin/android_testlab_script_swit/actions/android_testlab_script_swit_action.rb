@@ -84,7 +84,7 @@ module Fastlane
               swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},"
               
               if part_index == (parts.length -1)
-                  swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
+                  swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
               end
            end
 
