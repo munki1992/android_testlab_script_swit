@@ -27,42 +27,42 @@ module Fastlane
         UI.message(params[:gcloud_components_channel])
         
         # Run Firebase Test Lab
-        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
-                  "--app #{params[:app_apk]} "\
-                  "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
-                  "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
-                  "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
-                  "--timeout #{params[:timeout]} "\
-                  "--results-bucket #{results_bucket} "\
-                  "--results-dir #{results_dir} "\
-                  "#{params[:extra_options]} "\
-                  "#{robo_script_option}"\
-                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
-        )
+#        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+#                  "--app #{params[:app_apk]} "\
+#                  "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
+#                  "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
+#                  "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
+#                  "--timeout #{params[:timeout]} "\
+#                  "--results-bucket #{results_bucket} "\
+#                  "--results-dir #{results_dir} "\
+#                  "#{params[:extra_options]} "\
+#                  "#{robo_script_option}"\
+#                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
+#        )
 
-        json = JSON.parse(File.read(params[:console_log_file_name]))
-        UI.message("Test status: #{json}")
+#        json = JSON.parse(File.read(params[:console_log_file_name]))
+#        UI.message("Test status: #{json}")
 
         #
         payload_string = params[:swit_webhook_payload]
         
         # 각 JSON 객체에 대해 반복
-        json.each do |item|
-          # 정보 추출하기
-          axis_value    = item["axis_value"]
-          outcome       = item["outcome"]
-          test_details  = item["test_details"]
-
-          # 'axis_value' 분리하기
-          parts = axis_value.split('-')
-
-          # 출력하기
-          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
-          
-          parts.each_with_index do |part, index|
-            UI.message("Part #{index + 1}: #{part}")
-          end
-        end
+#        json.each do |item|
+#          # 정보 추출하기
+#          axis_value    = item["axis_value"]
+#          outcome       = item["outcome"]
+#          test_details  = item["test_details"]
+#
+#          # 'axis_value' 분리하기
+#          parts = axis_value.split('-')
+#
+#          # 출력하기
+#          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
+#
+#          parts.each_with_index do |part, index|
+#            UI.message("Part #{index + 1}: #{part}")
+#          end
+#        end
         
 #        params[:devices].each_with_index do |device, index|
 #          payload_string = +{,
@@ -77,16 +77,16 @@ module Fastlane
         
         
         # Fetch results
-        download_dir = params[:download_dir]
-        if download_dir
-          UI.message("Fetch results from Firebase Test Lab results bucket")
-          json.each do |status|
-            axis = status["axis_value"]
-            Helper.if_need_dir("#{download_dir}/#{axis}")
-            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-          end
-        end
+#        download_dir = params[:download_dir]
+#        if download_dir
+#          UI.message("Fetch results from Firebase Test Lab results bucket")
+#          json.each do |status|
+#            axis = status["axis_value"]
+#            Helper.if_need_dir("#{download_dir}/#{axis}")
+#            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+#            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+#          end
+#        end
          
          
         # Swit Message
