@@ -80,7 +80,7 @@ module Fastlane
           
           swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
           
-          parts.each_with_index do |part, index|
+          parts.each_with_index do |part, part_index|
               swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},"
               
               if index == (parts.length -1)
@@ -88,7 +88,7 @@ module Fastlane
               end
            end
 
-           swit_device_payload += "," unless device_index == resultJson.length -1 && index == parts.length -1
+          swit_device_payload += "," unless device_index == (resultJson.length - 1) && part_index == (parts.length - 1)
         end
 
         # remove the last comma if it exists
