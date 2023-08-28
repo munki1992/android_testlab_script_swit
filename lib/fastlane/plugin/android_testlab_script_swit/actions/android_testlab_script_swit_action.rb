@@ -68,8 +68,7 @@ module Fastlane
 #              swit_device_payload += "," unless index == parts.length - 1
 #          end
 #        end
-        
-        
+
         resultJson.each_with_index do |item, device_index|
           # 정보 추출하기
           axis_value    = item["axis_value"]
@@ -81,23 +80,19 @@ module Fastlane
           
           swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
           
-          part_names = ["Model", "Version", "Locale", "Orientation"]
-          
           parts.each_with_index do |part, index|
-              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{part_names[index]} : #{parts[index]}\"}]},"
-              
-              if index == parts.length -1
+              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},"
+              if index == parts.length -1 then
                   swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
               end
-              
-              swit_device_payload += "," unless device_index == resultJson.length -1 && index == parts.length -1
-                  
            end
-           
+
+           swit_device_payload += "," unless device_index == resultJson.length -1 && index == parts.length -1
         end
 
         # remove the last comma if it exists
         swit_device_payload.chomp!(',')
+
         
         
         
