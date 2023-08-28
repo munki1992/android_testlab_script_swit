@@ -13,6 +13,16 @@ module Fastlane
         UI.message("********************************")
         UI.message("Start Action")
         UI.message("********************************")
+        
+        def measure_time
+          start_time = Time.now
+          yield
+          end_time = Time.now
+          duration_sec_total = (end_time - start_time).round(1)
+          duration_min = (duration_sec_total / 60).round(1)
+          duration_sec = duration_sec_total % 60
+          return "#{duration_min}분 소요시간 자동화"
+        end
 
         # Result Bucket & Dir
         results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
@@ -27,12 +37,6 @@ module Fastlane
         # RoboScriptOption
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
-        # Swit Result PayLoad
-        swit_device_payload = ""
-        
-        # Swit Send PayLoad
-        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-        
         # Run Firebase Test Lab
         Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
@@ -46,51 +50,38 @@ module Fastlane
                   "#{robo_script_option}"\
                   "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
         )
-
+        
+        # Swit Result PayLoad
+        swit_device_payload = ""
+        
+        # Swit Send PayLoad - 테스트 시간 추가
+        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
+        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{test_time}\"}]},"
+        
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
 
         swit_device_payload = resultJson.map.with_index do |item, device_index|
           axis_value_parts = item["axis_value"].split('-')
           outcome = item["outcome"]
-
+          
+          model = axis_value_parts[0]
+          version = axis_value_parts[1]
+          locale = axis_value_parts[2]
+          orientation = axis_value_parts[3]
+          
           parts_payload = axis_value_parts.map do |part|
             "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
           end.join(',')
 
-          device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},#{parts_payload},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\": #{outcome.to_json}}]}"
-        end.join(',')
+          device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model: #{model}\"},{\"type\":\"rt_text\",\"content\":\"version: #{version}\"},{\"type\":\"rt_text\",\"content\":\"locale: #{locale}\"},{\"type\":\"rt_text\",\"content\":\"orientation: #{orientation}\"},{\"type\":\"rt_text\",\"content\": \"Outcome: #{outcome.to_json}}]}"
+          end.join(',')
 
         swit_device_payload.chomp!(',')
-
-
-
         
-        # 각 JSON 객체에 대해 반복
-#        resultJson.each do |item|
-#          # 정보 추출하기
-#          axis_value    = item["axis_value"]
-#          outcome       = item["outcome"]
-#          test_details  = item["test_details"]
-#
-#          # 'axis_value' 분리하기
-#          parts = axis_value.split('-')
-#
-#          parts.each_with_index do |part, index|
-#              swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-#                      {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},
-#                      {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
-#
-#              swit_device_payload += "," unless index == parts.length - 1
-#          end
-#        end
-
-
         
-
         
-        # 중간 체크
-        UI.message(swit_device_payload)
+        
         
         # Fetch results
         download_dir = params[:download_dir]
