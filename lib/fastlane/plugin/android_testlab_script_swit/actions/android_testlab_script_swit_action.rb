@@ -74,9 +74,9 @@ module Fastlane
                     {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
                     {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
                     {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
-                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
+                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"orientation : #{part[:orientation]}"}}],
                     {\"type\":{\"tada:\"},{\"name\":{\"tada:\"}}},
-                    {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : " + result[:outcome] + "\"}]}"
+                    {\"type":" "result", "outcome": "#{result[:outcome]}"}"
 
                 new_payload += "," unless index == result[:parts].length -1
             end
