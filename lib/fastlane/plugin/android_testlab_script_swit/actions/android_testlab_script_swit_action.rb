@@ -23,40 +23,56 @@ module Fastlane
           duration_sec = duration_sec_total % 60
           return "#{duration_min}분 소요시간 자동화"
         end
-
-        # Result Bucket & Dir
-        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
-        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
-
-        # Set Target Project ID
-        Helper.config(params[:project_id])
-
-        # Activate service account
-        Helper.authenticate(params[:gcloud_key_file])
-
-        # RoboScriptOption
-        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
-        # Run Firebase Test Lab
-        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
-                  "--app #{params[:app_apk]} "\
-                  "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
-                  "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
-                  "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
-                  "--timeout #{params[:timeout]} "\
-                  "--results-bucket #{results_bucket} "\
-                  "--results-dir #{results_dir} "\
-                  "#{params[:extra_options]} "\
-                  "#{robo_script_option}"\
-                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
-        )
+        duration = measure_time do
+            
+            # Result Bucket & Dir
+            results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
+            results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
+
+            # Set Target Project ID
+            Helper.config(params[:project_id])
+
+            # Activate service account
+            Helper.authenticate(params[:gcloud_key_file])
+
+            # RoboScriptOption
+            robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
+            
+            # Run Firebase Test Lab
+            Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+                      "--app #{params[:app_apk]} "\
+                      "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
+                      "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
+                      "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
+                      "--timeout #{params[:timeout]} "\
+                      "--results-bucket #{results_bucket} "\
+                      "--results-dir #{results_dir} "\
+                      "#{params[:extra_options]} "\
+                      "#{robo_script_option}"\
+                      "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
+            )
+            
+            # Fetch results
+            download_dir = params[:download_dir]
+            if download_dir
+              UI.message("Fetch results from Firebase Test Lab results bucket")
+              json.each do |status|
+                axis = status["axis_value"]
+                Helper.if_need_dir("#{download_dir}/#{axis}")
+                Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+                Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
+              end
+            end
+            
+        end
         
         # Swit Result PayLoad
         swit_device_payload = ""
         
         # Swit Send PayLoad - 테스트 시간 추가
         swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{test_time}\"}]},"
+        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{duration}\"}]},"
         
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
@@ -78,22 +94,6 @@ module Fastlane
           end.join(',')
 
         swit_device_payload.chomp!(',')
-        
-        
-        
-        
-        
-        # Fetch results
-        download_dir = params[:download_dir]
-        if download_dir
-          UI.message("Fetch results from Firebase Test Lab results bucket")
-          json.each do |status|
-            axis = status["axis_value"]
-            Helper.if_need_dir("#{download_dir}/#{axis}")
-            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-          end
-        end
 
         # Swit PayLoad 병합
         swit_webhook_payload += swit_device_payload + ']}]}'
