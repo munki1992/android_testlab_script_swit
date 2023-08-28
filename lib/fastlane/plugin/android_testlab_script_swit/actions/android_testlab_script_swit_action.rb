@@ -45,22 +45,22 @@ module Fastlane
 
         
         # 각 JSON 객체에 대해 반복
-        json.each do |item|
-          # 정보 추출하기
-          axis_value    = item["axis_value"]
-          outcome       = item["outcome"]
-          test_details  = item["test_details"]
-
-          # 'axis_value' 분리하기
-          parts = axis_value.split('-')
-
-          # 출력하기
-          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
-
-          parts.each_with_index do |part, index|
-            UI.message("Part #{index + 1}: #{part}")
-          end
-        end
+#        json.each do |item|
+#          # 정보 추출하기
+#          axis_value    = item["axis_value"]
+#          outcome       = item["outcome"]
+#          test_details  = item["test_details"]
+#
+#          # 'axis_value' 분리하기
+#          parts = axis_value.split('-')
+#
+#          # 출력하기
+#          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
+#
+#          parts.each_with_index do |part, index|
+#            UI.message("Part #{index + 1}: #{part}")
+#          end
+#        end
         
 #        params[:devices].each_with_index do |device, index|
 #          payload_string = +{,
