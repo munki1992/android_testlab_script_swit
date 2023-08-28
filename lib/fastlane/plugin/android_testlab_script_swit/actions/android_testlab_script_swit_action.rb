@@ -67,21 +67,10 @@ module Fastlane
 
               swit_device_payload += "," unless index == parts.length - 1
           end
-          
         end
-
-#        results.each do |result|
-#            result[:parts].each_with_index do |part, index|
-#                swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-#                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
-#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
-#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
-#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
-#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
-#
-#                swit_device_payload += "," unless index == result[:parts].length - 1
-#            end
-#        end
+        
+        # 중간 체크
+        UI.message(swit_device_payload)
         
         # Fetch results
         download_dir = params[:download_dir]
@@ -97,6 +86,9 @@ module Fastlane
 
         # Swit PayLoad 병합
         swit_webhook_payload += swit_device_payload + ']}]}'
+        
+        # 마지막 체크
+        UI.message(swit_webhook_payload)
          
         # Swit WebHook
         HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
