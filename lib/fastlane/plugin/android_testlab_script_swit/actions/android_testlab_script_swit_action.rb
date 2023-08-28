@@ -8,14 +8,14 @@ module Fastlane
   module Actions
     class AndroidTestlabScriptSwitAction < Action
 
-        def measure_time
-          start_time = Time.now
-          yield
-          end_time = Time.now
-          duration_sec_total = (end_time - start_time).round(1)
-          duration_min = (duration_sec_total / 60).round(1)
-          duration_sec = duration_sec_total % 60
-          return "#{duration_min}분 소요시간 자동화"
+        def self.measure_time
+            start_time = Time.now
+            yield
+            end_time = Time.now
+            duration_sec_total = (end_time - start_time).round(1)
+            duration_min = (duration_sec_total / 60).round(1)
+            duration_sec = duration_sec_total % 60
+            return "#{duration_min}분 소요시간 자동화"
         end
         
       # actions run
