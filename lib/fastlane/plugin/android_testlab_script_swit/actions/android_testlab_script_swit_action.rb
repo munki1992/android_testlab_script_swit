@@ -44,14 +44,14 @@ module Fastlane
         UI.message("Test status: #{json}")
 
         #
-        payload_string = params[:swit_webhook_payload]
+#        payload_string = params[:swit_webhook_payload]
         
         # 각 JSON 객체에 대해 반복
         json.each do |item|
           # 정보 추출하기
-          axis_value = item["axis_value"]
-          outcome = item["outcome"]
-          test_details = item["test_details"]
+          axis_value    = item["axis_value"]
+          outcome       = item["outcome"]
+          test_details  = item["test_details"]
 
           # 'axis_value' 분리하기
           parts = axis_value.split('-')
@@ -61,18 +61,18 @@ module Fastlane
           
           parts.each_with_index do |part, index|
             UI.message("Part #{index + 1}: #{part}")
+            
+            params[:devices].each_with_index do |device, index|
+              payload_string = {
+                {"type":"rt_section","indent":1,"elements":[{"type":"rt_text","content":"Device#{index + 1}"}]},
+                {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"model : #{device[:model]}"}]},
+                {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"OS Version : #{device[:version]}"}]},
+                {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"locale : #{device[:locale]}"}}},
+                {"type":"rt_section","indent":2,"elements":[{"type\":\"rt_text\",\"content":{"orientation : #{device[:orientation]}"}}},
+                {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"Result : #{outcome}"}}},
+              }
+            end
           end
-          
-#          params[:devices].each_with_index do |device, index|
-#            payload_string += %Q{
-#              {"type":"rt_section","indent":1,"elements":[{"type":"rt_text","content":"Device#{index + 1}"}]},
-#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"model : #{device[:model]}"}]},
-#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":"OS Version : #{device[:version]}"}]},
-#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"locale : #{device[:locale]}"}}},
-#              {"type":"rt_section","indent":2,"elements":[{"type\":\"rt_text\",\"content":{"orientation : #{device[:orientation]}"}}},
-#              {"type":"rt_section","indent":2,"elements":[{"type":"rt_text","content":{"Result : #{outcome}"}}},
-#            }
-#          end
           
         end
         
@@ -188,7 +188,7 @@ module Fastlane
                                          type: String,
                                          optional: false),
 
-            # swit_webhook url (true)
+            # swit_webhook url (false)
             FastlaneCore::ConfigItem.new(key: :swit_webhook_url,
                                          env_name: "SWIT_WEBHOOK_URL",
                                          description: "The Swit WebHOOK URL",
