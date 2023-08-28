@@ -86,14 +86,14 @@ module Fastlane
 #          end
 #        end
 
-        new_payload = [
-            {"type" => "rt_section", "indent" => 1, "elements" => [{"type" => "rt_text", "content" => "Device#{index + 1}"}]},
-            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:model]}"}]},
-            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:version]}"}]},
-            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:locale]}"}]},
-            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{device[:orientation]}"}]},
-            {"type" => "rt_section", "indent" => 2, "elements" => [{"type" => "rt_text", "content" => "model : #{outcome}"}]}
-        ]
+        
+        new_payload = "[{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
+                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
+                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:version]}\"}]},
+                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:locale]}\"}]},
+                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:orientation]}\"}]},
+                    {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{outcome}\"}]}]"
+
         
         # 원래 하던 행위
 #        payload_string = params[:swit_webhook_payload]
