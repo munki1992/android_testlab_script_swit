@@ -50,6 +50,31 @@ module Fastlane
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
 
+        resultJson.each_with_index do |item, device_index|
+          # 정보 추출하기
+          axis_value    = item["axis_value"]
+          outcome       = item["outcome"]
+          test_details  = item["test_details"]
+
+          # 'axis_value' 분리하기
+          parts = axis_value.split('-')
+          
+          swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
+          
+          parts.each_with_index do |part, part_index|
+              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]},"
+              
+              if part_index == (parts.length -1)
+                  swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content":"Result : #{outcome}\"}]}"
+                  swit_device_payload += "," unless device_index == (resultJson.length -1)
+              end
+           end
+        end
+
+        # remove the last comma if it exists
+        swit_device_payload.chomp!(',')
+
+        
         # 각 JSON 객체에 대해 반복
 #        resultJson.each do |item|
 #          # 정보 추출하기
@@ -69,35 +94,9 @@ module Fastlane
 #          end
 #        end
 
-        resultJson.each_with_index do |item, device_index|
-          # 정보 추출하기
-          axis_value    = item["axis_value"]
-          outcome       = item["outcome"]
-          test_details  = item["test_details"]
-
-          # 'axis_value' 분리하기
-          parts = axis_value.split('-')
-          
-          swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},"
-          
-          parts.each_with_index do |part, part_index|
-              swit_device_payload += "{\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},"
-              
-              if part_index == (parts.length -1)
-                  swit_device_payload += "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{outcome}\"}]}"
-              end
-           end
-
-          swit_device_payload += "," unless device_index == (resultJson.length - 1) && part_index == (parts.length - 1)
-        end
-
-        # remove the last comma if it exists
-        swit_device_payload.chomp!(',')
 
         
-        
-        
-        
+
         
         # 중간 체크
         UI.message(swit_device_payload)
