@@ -64,26 +64,29 @@ module Fastlane
 
           # 'axis_value' 분리하기
           parts = axis_value.split('-')
+          
+          parts.each_with_index do |part, index|
+              swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
+                      {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{parts[index]}\"}]},
+                      {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
 
-          # 출력하기
-          UI.message("Outcome: #{outcome}, Test Details: #{test_details}")
-
-          # 결과 데이터 저장
-          results << { parts: parts, outcome: outcome }
+              swit_device_payload += "," unless index == result[:parts].length - 1
+          end
+          
         end
 
-        results.each do |result|
-            result[:parts].each_with_index do |part, index|
-                swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
-                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{result[:parts].join(', ')}\"}]},
-                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
-                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
-                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
-                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
-
-                swit_device_payload += "," unless index == result[:parts].length - 1
-            end
-        end
+#        results.each do |result|
+#            result[:parts].each_with_index do |part, index|
+#                swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{index + 1}\"}]},
+#                        {\"type\": \"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model : #{part[:model]}\"}]},
+#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"OS Version : #{part[:version]}\"}]},
+#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{part[:locale]}\"}]},
+#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{part[:orientation]}\"}]},
+#                        {\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Result : #{result[:outcome]}\"}]}"
+#
+#                swit_device_payload += "," unless index == result[:parts].length - 1
+#            end
+#        end
 
         # 결과좀 봅시다.
         UI.message(new_payload)
