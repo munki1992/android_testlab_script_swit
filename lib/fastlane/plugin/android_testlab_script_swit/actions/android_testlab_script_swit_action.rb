@@ -86,10 +86,10 @@ module Fastlane
         
         params[:devices].each_with_index do |device, index|
           new_payload += "[{\"type\": \"rt_section\", \"indent\": 1, \"elements\": [{\"type\": \"rt_text\", \"content\": \"Device#{index + 1}\"}]},
-            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
-            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"OS Version : #{device[:version]}\"}]},
-            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"locale : #{device[:locale]}\"}]},
-            {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"orientation : #{device[:orientation]}\"}]}"
+              {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \"model : #{device[:model]}\"}]},
+              {\"type\": \"rt_section\", \"indent\": 2, \"elements\": [{\"type\": \"rt_text\", \"content\": \\\"OS Version : #{device[:version]}\\\"}]},
+              {\"type\":\"rt_section\",\"indent":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"locale : #{device[:locale]}\\\"]}],
+              {\"type\":\"rt_section\",\"indent":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"orientation : #{device[:orientation]}\\\"]}]}"
                 
           new_payload += "," unless index == params[:devices].length - 1
         end
@@ -112,7 +112,7 @@ module Fastlane
 
         
         # Remove the closing square bracket from the original payload and add a comma
-        swit_webhook_payload = params[:swit_webhook_payload][0..-3] + ','
+        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
 
         # Add the additional payload and close the square bracket
         swit_webhook_payload += new_payload + ']}]}'
