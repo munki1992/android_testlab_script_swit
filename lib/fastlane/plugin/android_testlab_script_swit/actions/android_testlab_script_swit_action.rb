@@ -9,14 +9,14 @@ module Fastlane
     class AndroidTestlabScriptSwitAction < Action
 
         def self.measure_time
-            start_time = Time.now
-            yield
-            end_time = Time.now
-            duration_sec_total = (end_time - start_time).round(1)
-            duration_min = (duration_sec_total / 60).round(1)
-            duration_sec = duration_sec_total % 60
-            return "#{duration_min}분 소요시간 자동화"
-        end
+          start_time = Time.now
+          yield
+          end_time = Time.now
+          duration_sec_total = (end_time - start_time).round(1)
+          duration_min = (duration_sec_total / 60).round(1)
+          duration_sec = duration_sec_total % 60
+          return "#{duration_min}분 소요시간 자동화"
+      end
         
       # actions run
       def self.run(params)
@@ -78,20 +78,20 @@ module Fastlane
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
 
         swit_device_payload = resultJson.map.with_index do |item, device_index|
-          axis_value_parts = item["axis_value"].split('-')
-          outcome = item["outcome"]
+        axis_value_parts = item["axis_value"].split('-')
+        outcome = item["outcome"]
           
-          model = axis_value_parts[0]
-          version = axis_value_parts[1]
-          locale = axis_value_parts[2]
-          orientation = axis_value_parts[3]
+        model = axis_value_parts[0]
+        version = axis_value_parts[1]
+        locale = axis_value_parts[2]
+        orientation = axis_value_parts[3]
           
-          parts_payload = axis_value_parts.map do |part|
-            "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
-          end.join(',')
+        parts_payload = axis_value_parts.map do |part|
+             "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
+        end.join(',')
 
-          device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"model: #{model}\"},{\"type\":\"rt_text\",\"content\":\"version: #{version}\"},{\"type\":\"rt_text\",\"content\":\"locale: #{locale}\"},{\"type\":\"rt_text\",\"content\":\"orientation: #{orientation}\"},{\"type\":\"rt_text\",\"content\": \"Outcome: #{outcome.to_json}}]}"
-          end.join(',')
+        device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"model: #{model}\"},{\"type\":\"rt_text\", \"content\": \"version: #{version}\"},{\"type\":\"rt_text\", \"content\": \"locale: #{locale}\"},{\"type":" rt_text\", \"content": \"orientation: #{orientation}\", {\"type":" rt_text", " content": "Outcome: \\\"#{outcome}\\\"" }]}"
+        end.join(',')
 
         swit_device_payload.chomp!(',')
 
