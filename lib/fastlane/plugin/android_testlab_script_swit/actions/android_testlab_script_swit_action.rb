@@ -73,7 +73,7 @@ module Fastlane
 
         # Swit Send PayLoad - 테스트 시간 추가
         swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{duration}\",\"styles\":{\"bold\":true}}]},"
+        swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : \"},{\"type\":\"rt_text\",\"content\":\"#{duration}\",\"styles\":{\"bold\":true}}]},"
 
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
@@ -86,21 +86,25 @@ module Fastlane
           version       = axis_value_parts[1]
           locale        = axis_value_parts[2]
           orientation   = axis_value_parts[3]
-
-          parts_payload = axis_value_parts.map do |part|
-            "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
-          end.join(',')
-          
-#          device_payload =
-#              "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]}, " +
-#              "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"}]}, " +
-#              "{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}}]"
               
+          # 디바이스 정보
           device_payload =
               "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]}, " +
-              "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"}]}, " +
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}]"
+              "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"}]}, "
+              
+          # 성공 여부
+          if outcome == 'passed'
+            device_payload +=
+              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" Passed \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}"
+          elsif outcome == 'failed'
+            device_payload +=
+              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type":"\:interrobang:\"}]}"
+          else # Skip or other outcomes
+            device_payload +=
+            "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":bulb:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type":"\:bulb:\"}]}"
+          end
 
+          device_payload += "]"
           
         end.join(',')
 
