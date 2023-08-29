@@ -91,7 +91,7 @@ module Fastlane
             "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
           end.join(',')
 
-          device_payload = "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"},{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" #{outcome} \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}]}]}"
+          device_payload = "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"},{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" #{outcome} \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}"
           
         end.join(',')
 
@@ -99,6 +99,8 @@ module Fastlane
 
         # Swit PayLoad 병합
         swit_webhook_payload += swit_device_payload + ']}]}'
+        
+        UI.message(swit_webhook_payload)
          
         # Swit WebHook
         HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
