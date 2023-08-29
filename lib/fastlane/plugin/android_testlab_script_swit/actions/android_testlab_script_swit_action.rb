@@ -15,7 +15,7 @@ module Fastlane
           duration_sec_total = (end_time - start_time).round(1)
           duration_min = (duration_sec_total / 60).round(1)
           duration_sec = duration_sec_total % 60
-          return "#{duration_min}분 소요시간 자동화"
+          return "총 #{duration_min}분 테스트"
       end
         
       # actions run
@@ -24,6 +24,7 @@ module Fastlane
         UI.message("Start Action")
         UI.message("********************************")
         
+        # TestLab 작업 및 작업 소요시간 측정
         duration = measure_time do
             
             # Result Bucket & Dir
@@ -72,7 +73,7 @@ module Fastlane
 
         # Swit Send PayLoad - 테스트 시간 추가
         swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{duration}\"}]},"
+        swit_webhook_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : #{duration}\",\"styles\":{\"bold\":true}}]},"
 
         # Firebase Test Lab Result Json
         resultJson = JSON.parse(File.read(params[:console_log_file_name]))
@@ -81,26 +82,23 @@ module Fastlane
           axis_value_parts = item["axis_value"].split('-')
           outcome = item["outcome"]
 
-          model = axis_value_parts[0]
-          version = axis_value_parts[1]
-          locale = axis_value_parts[2]
-          orientation = axis_value_parts[3]
+          model         = axis_value_parts[0]
+          version       = axis_value_parts[1]
+          locale        = axis_value_parts[2]
+          orientation   = axis_value_parts[3]
 
           parts_payload = axis_value_parts.map do |part|
             "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Part : #{part}\"}]}"
           end.join(',')
 
-          device_payload = "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"Device#{device_index + 1}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"model: #{model}\"},{\"type\":\"rt_text\", \"content\": \"version: #{version}\"},{\"type\":\"rt_text\", \"content\": \"locale: #{locale}\"},{\"type\":\"rt_text\", \"content\": \"orientation: #{orientation}\"},{\"type\":\"rt_text\", \"content\": \"Outcome: #{outcome}\"}]}"
-
+          device_payload = "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]},{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"},{\"type\":\"rich_text\",\"elements\":[{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" #{outcome} \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}]}]}"
+          
         end.join(',')
 
         swit_device_payload.chomp!(',')
 
         # Swit PayLoad 병합
         swit_webhook_payload += swit_device_payload + ']}]}'
-        
-        # 마지막 체크
-        UI.message(swit_webhook_payload)
          
         # Swit WebHook
         HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
