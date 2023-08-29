@@ -101,7 +101,7 @@ module Fastlane
               "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type\":\"rt_emoji\",\"name\": \":interrobang:\"}]}"
           else # Skip or other outcomes
             device_payload +=
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":{\"name\": \":bulb:\"}},{\"text\":{\"content\": \" Skipped or other outcomes \"}, {\"emoji\":{\"name\": \":bulb:\"}}]}"
+              "{\"type\":\"rt_section\",\"elements\":[{\"type\":{\"name\": \":bulb:\"}},{\"text\":{\"content\": \" Skipped or other outcomes \"}}, {\"emoji\":{\"name\": \":bulb:\"}}]}"
           end
 
           device_payload += "]"
