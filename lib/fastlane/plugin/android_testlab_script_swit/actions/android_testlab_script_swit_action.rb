@@ -98,10 +98,10 @@ module Fastlane
               "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" Passed \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}"
           elsif outcome == 'failed'
             device_payload +=
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type":"\:interrobang:\"}]}"
+              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type\":\":interrobang:\"}]}"
           else # Skip or other outcomes
             device_payload +=
-            "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":bulb:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type":"\:bulb:\"}]}"
+            "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":bulb:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type\":\:bulb:\"}]}"
           end
 
           device_payload += "]"
