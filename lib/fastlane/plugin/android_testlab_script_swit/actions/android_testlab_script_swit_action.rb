@@ -76,7 +76,7 @@ module Fastlane
         swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : \"},{\"type\":\"rt_text\",\"content\":\"#{duration}\",\"styles\":{\"bold\":true}}]},"
 
         # Firebase Test Lab Result Json
-        resultJson = JSON.parse(File.read(params[:console_log_file_name]))
+        resultJson = File.read(params[:console_log_file_name])
 
         swit_device_payload = resultJson.map.with_index do |item, device_index|
           axis_value_parts = item["axis_value"].split('-')
@@ -93,10 +93,10 @@ module Fastlane
               "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"}]}, "
               
           # 성공 여부
-          if outcome == 'passed'
+          if outcome == 'Passed'
             device_payload +=
               "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" Passed \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}"
-          elsif outcome == 'failed'
+          elsif outcome == 'Failed'
             device_payload +=
               "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type\":\"rt_emoji\",\"name\": \":interrobang:\"}]}"
           else # Skip or other outcomes
