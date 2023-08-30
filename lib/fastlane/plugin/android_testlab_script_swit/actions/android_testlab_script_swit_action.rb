@@ -7,16 +7,6 @@ require 'httparty'
 module Fastlane
   module Actions
     class AndroidTestlabScriptSwitAction < Action
-
-        def self.measure_time
-          start_time = Time.now
-          yield
-          end_time = Time.now
-          duration_sec_total = (end_time - start_time).round(1)
-          duration_min = (duration_sec_total / 60).round(1)
-          duration_sec = duration_sec_total % 60
-          return "총 #{duration_min}분 테스트"
-      end
         
       # actions run
       def self.run(params)
@@ -24,99 +14,44 @@ module Fastlane
         UI.message("Start Action")
         UI.message("********************************")
         
-        # TestLab 작업 및 작업 소요시간 측정
-        duration = measure_time do
-            
-            # Result Bucket & Dir
-            results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
-            results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
+        # Result Bucket & Dir
+        results_bucket = params[:firebase_test_lab_results_bucket] || "#{params[:project_id]}_test_results"
+        results_dir = params[:firebase_test_lab_results_dir] || "firebase_test_result_#{DateTime.now.strftime('%Y-%m-%d-%H:%M:%S')}"
 
-            # Set Target Project ID
-            Helper.config(params[:project_id])
+        # Set Target Project ID
+        Helper.config(params[:project_id])
 
-            # Activate service account
-            Helper.authenticate(params[:gcloud_key_file])
+        # Activate service account
+        Helper.authenticate(params[:gcloud_key_file])
 
-            # RoboScriptOption
-            robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
-            
-            # Run Firebase Test Lab
-            Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
-                      "--app #{params[:app_apk]} "\
-                      "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
-                      "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
-                      "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
-                      "--timeout #{params[:timeout]} "\
-                      "--results-bucket #{results_bucket} "\
-                      "--results-dir #{results_dir} "\
-                      "#{params[:extra_options]} "\
-                      "#{robo_script_option}"\
-                      "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
-            )
-            
-            # Fetch results
-            download_dir = params[:download_dir]
-            if download_dir
-              UI.message("Fetch results from Firebase Test Lab results bucket")
-              json.each do |status|
-                axis = status["axis_value"]
-                Helper.if_need_dir("#{download_dir}/#{axis}")
-                Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
-                Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
-              end
-            end
-            
-        end
+        # RoboScriptOption
+        robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
-        # Swit Result PayLoad
-        swit_device_payload = ""
-
-        # Swit Send PayLoad - 테스트 시간 추가
-        swit_webhook_payload = params[:swit_webhook_payload][0..-5] + ','
-        swit_device_payload += "{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"테스트 시간 : \"},{\"type\":\"rt_text\",\"content\":\"#{duration}\",\"styles\":{\"bold\":true}}]},"
-
-        # Firebase Test Lab Result Json
-        resultJson = File.read(params[:console_log_file_name])
-
-        swit_device_payload = resultJson.map.with_index do |item, device_index|
-          axis_value_parts = item["axis_value"].split('-')
-          outcome = item["outcome"]
-
-          model         = axis_value_parts[0]
-          version       = axis_value_parts[1]
-          locale        = axis_value_parts[2]
-          orientation   = axis_value_parts[3]
-              
-          # 디바이스 정보
-          device_payload =
-              "[{\"type\":\"rt_section\",\"indent\":1,\"elements\":[{\"type\":\"rt_text\",\"content\":\"#{model}\"}]}, " +
-              "{\"type\":\"rt_section\",\"indent\":2,\"elements\":[{\"type\":\"rt_text\", \"content\": \"OS: #{version} / Locale: #{locale} / Orientation: #{orientation}\"}]}, "
-              
-          # 성공 여부
-          if outcome == 'Passed'
-            device_payload +=
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"},{\"type\":\"rt_text\",\"content\":\" Passed \"},{\"type\":\"rt_emoji\",\"name\":\":tada:\"}]}"
-          elsif outcome == 'Failed'
-            device_payload +=
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":\"rt_text\",\"content\":\"결과 : \"},{\"type\":\"rt_emoji\",\"name\":\":interrobang:\"},{\"type\":\"rt_text\",\"content\":\" Failed \"},{\"type\":\"rt_emoji\",\"name\": \":interrobang:\"}]}"
-          else # Skip or other outcomes
-            device_payload +=
-              "{\"type\":\"rt_section\",\"elements\":[{\"type\":{\"name\": \":bulb:\"}},{\"text\":{\"content\": \" Skipped or other outcomes \"}}, {\"emoji\":{\"name\": \":bulb:\"}}]}"
+        # Run Firebase Test Lab
+        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+                  "--app #{params[:app_apk]} "\
+                  "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
+                  "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
+                  "#{params[:devices].map { |d| "--device model=#{d[:model]},version=#{d[:version]},locale=#{d[:locale]},orientation=#{d[:orientation]} " }.join}"\
+                  "--timeout #{params[:timeout]} "\
+                  "--results-bucket #{results_bucket} "\
+                  "--results-dir #{results_dir} "\
+                  "#{params[:extra_options]} "\
+                  "#{robo_script_option}"\
+                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
+        )
+        
+        # Fetch results
+        download_dir = params[:download_dir]
+        if download_dir
+          UI.message("Fetch results from Firebase Test Lab results bucket")
+          json.each do |status|
+            axis = status["axis_value"]
+            Helper.if_need_dir("#{download_dir}/#{axis}")
+            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+            Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
           end
-
-          device_payload += "]"
-          
-        end.join(',')
-
-        swit_device_payload.chomp!(',')
-
-        # Swit PayLoad 병합
-        swit_webhook_payload += swit_device_payload + ']}]}'
-        
-        UI.message(swit_webhook_payload)
-         
-        # Swit WebHook
-        HTTParty.post(params[:swit_webhook_url], body: { body_text: swit_webhook_payload }.to_json, headers: { 'Content-Type' => 'application/json' })
+        end
 
         UI.message("********************************")
         UI.message("Finish Action")
@@ -214,20 +149,6 @@ module Fastlane
                                          description: "The path for your android app apk",
                                          type: String,
                                          optional: false),
-
-            # swit_webhook url (false)
-            FastlaneCore::ConfigItem.new(key: :swit_webhook_url,
-                                         env_name: "SWIT_WEBHOOK_URL",
-                                         description: "The Swit WebHOOK URL",
-                                         type: String,
-                                         optional: true),
-
-            # swit_webhook payload (false)
-            FastlaneCore::ConfigItem.new(key: :swit_webhook_payload,
-                                         env_name: "SWIT_WEBHOOK_PAYLOAD",
-                                         description: "The Swit WebHOOK PAYLOAD",
-                                         type: String,
-                                         optional: true),
 
             # test apk (false)
             FastlaneCore::ConfigItem.new(key: :app_test_apk,
