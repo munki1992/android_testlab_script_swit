@@ -48,7 +48,7 @@ module Fastlane
           json.each do |status|
             axis = status["axis_value"]
             Helper.if_need_dir("#{download_dir}/#{axis}")
-            Helper.copy_from_gcs("#{results_bucket}/#{results_dir}/#{axis}", download_dir)
+            Helper.copy_from_gcs("#{results_bucket}/#{results_dirresults_dir}/#{axis}", download_dir)
             Helper.set_public("#{results_bucket}/#{results_dir}/#{axis}")
           end
         end
