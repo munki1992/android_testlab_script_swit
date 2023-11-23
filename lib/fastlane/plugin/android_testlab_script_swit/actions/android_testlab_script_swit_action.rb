@@ -34,23 +34,10 @@ module Fastlane
           # 딜레이 추가
           sleep(index * 60)  # 각 디바이스별로 1분씩 증가하는 딜레이
 
-          # Run Firebase Test Lab for the current device
-          Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
-                            "--app #{params[:app_apk]} "\
-                            "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
-                            "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
-                            "--device model=#{device[:model]},version=#{device[:version]},locale=#{device[:locale]},orientation=#{device[:orientation]} "\
-                            "--timeout #{params[:timeout]} "\
-                            "--results-bucket #{results_bucket} "\
-                            "--results-dir #{results_dir} "\
-                            "#{params[:extra_options]} "\
-                            "#{robo_script_option}"\
-                            "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
-                           )
         end
         
         
-        #Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
+        Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
                   "#{"--use-orchestrator " if params[:type] == "instrumentation" && params[:use_orchestrator]}"\
@@ -60,7 +47,8 @@ module Fastlane
                   "--results-dir #{results_dir} "\
                   "#{params[:extra_options]} "\
                   "#{robo_script_option}"\
-                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}" )
+                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}" 
+        )
         
         # Fetch results
         download_dir = params[:download_dir]
