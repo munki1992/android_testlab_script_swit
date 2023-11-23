@@ -28,15 +28,6 @@ module Fastlane
         robo_script_option = params[:robo_script_path].nil? ? "" : "--robo-script #{params[:robo_script_path]} "
         
         # Run Firebase Test Lab
-        
-        # 딜레이
-        params[:devices].each_with_index do |device, index|
-          # 딜레이 추가
-          sleep(index * 30)  # 각 디바이스별로 1분씩 증가하는 딜레이
-
-        end
-
-        
         Helper.run_tests(params[:gcloud_components_channel], "--type #{params[:type]} "\
                   "--app #{params[:app_apk]} "\
                   "#{"--test #{params[:app_test_apk]} " unless params[:app_test_apk].nil?}"\
