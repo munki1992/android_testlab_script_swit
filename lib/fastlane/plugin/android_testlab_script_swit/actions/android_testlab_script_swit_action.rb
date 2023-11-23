@@ -32,7 +32,7 @@ module Fastlane
         # 딜레이
         params[:devices].each_with_index do |device, index|
           # 딜레이 추가
-          sleep(index * 60)  # 각 디바이스별로 1분씩 증가하는 딜레이
+          sleep(index * 30)  # 각 디바이스별로 1분씩 증가하는 딜레이
 
         end
         
