@@ -46,6 +46,7 @@ module Fastlane
                             "#{params[:extra_options]} "\
                             "#{robo_script_option}"\
                             "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
+                           )
         end
         
         
@@ -59,8 +60,7 @@ module Fastlane
                   "--results-dir #{results_dir} "\
                   "#{params[:extra_options]} "\
                   "#{robo_script_option}"\
-                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}"
-        #)
+                  "--format=json 1>#{Helper.if_need_dir(params[:console_log_file_name])}" )
         
         # Fetch results
         download_dir = params[:download_dir]
