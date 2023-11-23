@@ -1,5 +1,5 @@
 module Fastlane
   module AndroidTestlabScriptSwit
-    VERSION = "0.1.942"
+    VERSION = "0.1.943"
   end
 end
